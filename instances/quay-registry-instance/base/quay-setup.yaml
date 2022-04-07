@@ -1,0 +1,37 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: quay-registry-setup
+  namespace: quay-registry
+  annotations:
+    argocd.argoproj.io/sync-wave: "201"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  labels:
+    gitops.tier.group: quay
+    gitops.tier.layer: services
+spec:
+  template:
+    spec:
+      containers:
+        - image: quay.io/openshift/origin-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Create config.yaml file"
+              echo "FEATURE_USER_CREATION: true" > /tmp/config.yaml
+              echo "SUPER_USERS:" >> /tmp/config.yaml
+              echo "- quayadmin" >> /tmp/config.yaml
+              oc create secret generic --from-file=config.yaml=/tmp/config.yaml \
+                  -n quay-registry \
+                  init-config-bundle-secret
+              exit 0
+          imagePullPolicy: IfNotPresent
+          name: quay-setup
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: cli-quay-setup-job-sa
+      serviceAccountName: cli-quay-setup-job-sa
+      terminationGracePeriodSeconds: 30

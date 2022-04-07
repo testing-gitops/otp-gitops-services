@@ -1,0 +1,6 @@
+infraAutomation:
+  enabled: true
+  config:
+    version: 2.3
+    catalogSourceImage: quay.io/cp4mcm/cp4mcm-orchestrator-catalog:2.3-latest
+    subscriptionChannel: 2.3-stable

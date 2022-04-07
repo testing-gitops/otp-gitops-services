@@ -1,0 +1,36 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: acm-setup
+  namespace: open-cluster-management
+  annotations:
+    argocd.argoproj.io/sync-wave: "201"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  labels:
+    gitops.tier.group: rhacm
+    gitops.tier.layer: services
+spec:
+  template:
+    spec:
+      containers:
+        - image: quay.io/openshift/origin-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Copy pull_secret from openshift-config to open-cluster-management"
+              DOCKER_CONFIG_JSON=`oc extract secret/pull-secret -n openshift-config --to=-`
+              oc create secret generic multiclusterhub-pull-secret \
+                  -n open-cluster-management \
+                  --from-literal=.dockerconfigjson="$DOCKER_CONFIG_JSON" \
+                  --type=kubernetes.io/dockerconfigjson
+              exit 0
+          imagePullPolicy: IfNotPresent
+          name: acm-setup
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: cli-pullsecret-job-sa
+      serviceAccountName: cli-pullsecret-job-sa
+      terminationGracePeriodSeconds: 30

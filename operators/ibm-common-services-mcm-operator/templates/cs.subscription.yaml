@@ -1,0 +1,12 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-common-service-operator
+  namespace: openshift-operators
+spec:
+  channel: {{.Values.cs.config.subscriptionChannel}} # ${CS_SUBSCRIPTION_CHANNEL}
+  installPlanApproval: Automatic
+  name: ibm-common-service-operator
+  source: opencloud-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: ibm-common-service-operator.v{{.Values.cs.config.version}}

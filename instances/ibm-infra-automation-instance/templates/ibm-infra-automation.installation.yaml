@@ -1,0 +1,114 @@
+apiVersion: orchestrator.management.ibm.com/v1alpha1
+kind: Installation
+metadata:
+  name: ibm-infra-automation-instance
+  namespace: {{.Values.infraAutomation.config.namespace}} # $INFRA_AUTOMATION_NAMESPACE
+spec:
+  storageClass: {{.Values.infraAutomation.config.blockStorageClass}} # $BLOCK_STORAGECLASS
+  imagePullSecret: {{.Values.infraAutomation.config.entitledRegistrySecret}} # $ENTITLED_REGISTRY_SECRET
+  license:
+    accept: true
+  mcmCoreDisabled: true
+  pakModules:
+    - config:
+        - enabled: true
+          name: ibm-management-im-install
+        - enabled: false
+          name: ibm-management-infra-grc
+        - enabled: true
+          name: ibm-management-infra-vm
+        - enabled: true
+          name: ibm-management-cam-install
+          spec:
+            manageservice:
+              camMongoPV:
+                name: cam-mongo-pv
+                persistence:
+                  storageClassName: {{.Values.infraAutomation.config.blockStorageClass}} # $BLOCK_STORAGECLASS
+                  accessMode: ReadWriteOnce
+                  enabled: true
+                  existingClaimName: ""
+                  existingDynamicVolume: false
+                  size: 150Gi
+                  useDynamicProvisioning: true
+              camTerraformPV:
+                name: cam-terraform-pv
+                persistence:
+                  storageClassName: {{.Values.infraAutomation.config.fileGidStorageClass}} # $FILE_GID_STORAGECLASS
+                  accessMode: ReadWriteMany
+                  enabled: true
+                  existingClaimName: ""
+                  existingDynamicVolume: false
+                  size: 150Gi
+                  useDynamicProvisioning: true
+              camLogsPV:
+                name: cam-logs-pv
+                persistence:
+                  storageClassName: {{.Values.infraAutomation.config.fileGidStorageClass}} # $FILE_GID_STORAGECLASS
+                  accessMode: ReadWriteMany
+                  enabled: true
+                  existingClaimName: ""
+                  existingDynamicVolume: false
+                  size: 100Gi
+                  useDynamicProvisioning: true
+              {{- if .Values.infraAutomation.config.roks.enabled}}
+              roks: true
+              roksRegion: {{.Values.infraAutomation.config.roks.region}}
+              roksZone: {{.Values.infraAutomation.config.roks.zone}}
+              {{- else}}
+              roks: false
+              {{- end}}
+              license:
+                accept: true
+        - enabled: true
+          name: ibm-management-service-library
+      enabled: true
+      name: infrastructureManagement
+    - config:
+        - enabled: true
+          name: ibm-management-monitoring
+          spec:
+            operandRequest: {}
+            monitoringDeploy:
+              global:
+                environmentSize: size0
+                persistence:
+                  storageClassOption:
+                    cassandrabak: none
+                    cassandradata: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                    couchdbdata: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                    datalayerjobs: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                    elasticdata: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                    kafkadata: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                    zookeeperdata: {{.Values.infraAutomation.config.blockStorageClass | default "default"}}
+                  storageSize:
+                    cassandrabak: 500Gi
+                    cassandradata: 500Gi
+                    couchdbdata: 50Gi
+                    datalayerjobs: 50Gi
+                    elasticdata: 50Gi
+                    kafkadata: 100Gi
+                    zookeeperdata: 10Gi
+      enabled: false
+      name: monitoring
+    - config:
+        - enabled: true
+          name: ibm-management-notary
+        - enabled: true
+          name: ibm-management-image-security-enforcement
+        - enabled: true
+          name: ibm-management-mutation-advisor
+        - enabled: true 
+          name: ibm-management-vulnerability-advisor
+      enabled: false
+      name: securityServices
+    - config:
+        - enabled: true
+          name: ibm-management-sre-chatops
+      enabled: false
+      name: operations
+    - config:
+        - enabled: true
+          name: ibm-management-manage-runtime
+      enabled: false
+      name: techPreview

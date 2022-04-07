@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: infra-auto-postinstall
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+  namespace: ibm-infra-automation
+spec:
+  template:
+    spec:
+      containers:
+      - name: infra-auto-console-link-postinstall
+        image: quay.io/congxdev/otp-console-link:4.8
+        imagePullPolicy: Always
+        env:
+        - name: APP_MENU_IMAGE_URL
+          value: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABItJREFUeNrsV11MVEcUnpm7/gts2KJiS73s0oi/KBp/QtpAG6ltgrs8tPVFo+nGNqaN6FMfmrCmUWOMQWO0SSWBNOWhTywvbTVpsf6hTaUtkHVjhN0iK6KsbPgJbu/eO/3m7m1kkV0u4Jo+eJOzc+/MmfN9c86ZObOEvHxm8GyP+FzvDfpcM7FhmclkrtIDhOuv3unaYKkGt7YFSlONqwojaoymBHBpbaXTIrC5NWjVVNq85a+AJ5mOBnBNSU6gItrhETacart1ygRuFssRTPbCzdUgIyclkMQDyA1ZVWg1xr1N0prItEIA8INwsyBSN+G4Riu1GKuckJxC6wAewfjBGWV68fV7VRtaugemOm9bn3+gvN9fNZkenYpRELFSRvYwC3cyiZdSxkepxDsY47eoRFoI5b9jPHDZUTBq1qZOwPH9I7nzo5xgMqW1v4SsAKwB2B6GoKH9EySaQEDB+yP0PcB7NuQJvnspJXdApO9Xe4GWzOb7Qz75h4yVQZr/XbiUUt6MyZeQEXvHE1n1Y+86GG0EARltPdrDf7yZNyHZEl/XPNjKhR0KewMgErlckEhi20O/DBt1VPcgKdM9IH8b9mDCAXTAxfxU584cPXGWe/vWQbkZygRtZce7Sy+ZcSuIzAGR2QhLFD7+58obDr3/7Z47wotVCFkEHjx9wbbCo++C4G6bBxm9HtleD3EZYbEiixuNrVZmFlw811bao5pGhzEvxrWEbeviMR1jvQBPmYT2hv6TYHsIqyi7+0GOafCNN7vnYp4Nq8xCmwuvqkwkK+ODCE3X1eWO6KS74PW6x69iQismegO7XvnEDHBRc4gxi7YQgBkAno+QUYiKbxtsCXvLsJjZCE3L1ULHlZTFCIfIJspoF5H4V2bAV/90n2oqmUU40xDbcGtJXmjMcKdRVxZxTpwgtLPkdlfhtRX28894YFHNkGDNYeRzsa1Cn1oPTwZe2NRHoM+gz8SK28uX8lT6W9oCbuyO7dBvvL7K3qAnYfbREWY7PjwfSTILQnGGD6I1FXe/czFBUnGRcJOBi+fG2vxaBKYdsg9kcpmRnbmQTHTyh4cyhLEekAiZTTz/jsX8dsUS0ycq7H8D+xnA280WfvkkDzU9H0VHCX+xQDEUejWFDaXrJvXbxmW9KFIXgVNkAVAx4kFGjs0JP01CFkKfms7rHMDvIiF3MLyUQAYTBlU6gr5omgn44IVshljkiaQbN6gKyaweTR8Bha4BrmQBEAoItY4jgFOE8OEjc9NGQI2xIoT5hiAQwr4sRt/P/w0iH9J6nUeRy9IUXoFFNjAUoW7E/B3iRhl9QQ8WXQuxIQe+FufAWeNIrnkR4PkN/TUAr8S2P4dD7O/4Uezm4u5+xji3PyO1tOd5A792fkCO36qIC0WuPrDLtjexFrj5JvyeECQht8R5gdyQUNlo/JzXbznEuJwQGr+aEWb0wfDTdyZ0CBmj70QrLjcRtKfvfZztmbgcu3kmfj+EvCXuoOJeAg0Gw5IgoYMYANQgMfY7AZQZpCQepHFpwt2x/v7+rMj/6g/uvwIMAOUwJgtmXuiZAAAAAElFTkSuQmCC
+        - name: APP_MENU_SECTION
+          value: One Touch Provisioning
+        - name: ROUTE_NAME
+          value: cp-console
+        - name: ROUTE_NAMESPACE
+          value: ibm-common-services
+        - name: CONSOLE_LINK_TEXT
+          value: IBM Infrastructure Automation
+        - name: APP_NAME
+          value: infra-auto
+      restartPolicy: OnFailure
+  backoffLimit: 2

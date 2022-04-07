@@ -1,0 +1,4 @@
+cs:
+  config:
+    version: 3.12
+    subscriptionChannel: v3

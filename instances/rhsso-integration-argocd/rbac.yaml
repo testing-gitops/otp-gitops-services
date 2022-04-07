@@ -1,0 +1,46 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sso-integration
+  namespace: openshift-gitops
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - patch
+  - apiGroups:
+      - "argoproj.io"
+    resources:
+      - argocds
+    verbs:
+      - get
+      - list
+      - patch 
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - patch 
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sso-integration
+  namespace: openshift-gitops
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sso-integration
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: sso-integration

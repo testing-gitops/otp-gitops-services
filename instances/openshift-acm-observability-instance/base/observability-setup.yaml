@@ -1,0 +1,67 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: observability-setup
+  namespace: open-cluster-management-observability
+  annotations:
+    argocd.argoproj.io/sync-wave: "201"
+    argocd.argoproj.io/hook: PreSync
+  labels:
+    gitops.tier.group: rhacm
+    gitops.tier.layer: services
+spec:
+  template:
+    spec:
+      containers:
+        - image: quay.io/openshift/origin-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Copy pull_secret from openshift-config to open-cluster-management-observability"
+              DOCKER_CONFIG_JSON=`oc extract secret/pull-secret -n openshift-config --to=-`
+              oc create secret generic multiclusterhub-operator-pull-secret \
+                  -n open-cluster-management-observability \
+                  --from-literal=.dockerconfigjson="$DOCKER_CONFIG_JSON" \
+                  --type=kubernetes.io/dockerconfigjson
+              echo "Create secret for thanos.yaml"
+              S3_ACCESS_KEY=""
+              S3_SECRET_KEY=""
+              while [[ z$S3_ACCESS_KEY == z ]]; do
+                 echo "Wait for acm-observability bucket to be created, sleeping 120 seconds"
+                 sleep 120 
+                 S3_ACCESS_KEY=$(oc get secret acm-observability-obc -n open-cluster-management-observability --template={{.data.AWS_ACCESS_KEY_ID}} | base64 -d)
+                 S3_SECRET_KEY=$(oc get secret acm-observability-obc -n open-cluster-management-observability --template={{.data.AWS_SECRET_ACCESS_KEY}} | base64 -d)
+              done;
+              echo "Set S3_BUCKET_NAME"
+              S3_BUCKET_NAME=$(oc get ObjectBucketClaim acm-observability-obc -n open-cluster-management-observability --template={{.spec.bucketName}})
+              oc get secret thanos-object-storage -n open-cluster-management-observability
+              if [[ $? == 1 ]]
+              then
+                echo "Create thanos object storage configuration"
+                echo "---
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: thanos-object-storage
+                  namespace: open-cluster-management-observability
+                type: Opaque
+                stringData:
+                  thanos.yaml: |
+                    type: s3
+                    config:
+                      bucket: $S3_BUCKET_NAME
+                      endpoint: s3.openshift-storage.svc
+                      insecure: true
+                      access_key: $S3_ACCESS_KEY
+                      secret_key: $S3_SECRET_KEY" | oc create -f -
+              fi
+              echo -n "thanos object storage configuration already exists"
+          imagePullPolicy: IfNotPresent
+          name: observability-setup
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: cli-job-sa
+      serviceAccountName: cli-job-sa
+      terminationGracePeriodSeconds: 30

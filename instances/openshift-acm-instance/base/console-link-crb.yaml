@@ -1,0 +1,38 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: default-sa-route-rb
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: open-cluster-management
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: route-get
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: route-get
+  namespace: open-cluster-management
+rules:
+  - verbs:
+    - get
+    apiGroups:
+    - route.openshift.io
+    resources:
+    - routes
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: default-sa-console-link-crb-rhacm
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: open-cluster-management
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: console-link-role

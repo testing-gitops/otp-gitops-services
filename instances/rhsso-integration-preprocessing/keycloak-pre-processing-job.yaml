@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-preprocessing
+  namespace: sso-integration
+spec:
+  template:
+    spec:
+      containers:
+      - name: keycloak-preprocessing
+        image: quay.io/leoliu2011/keycloak-preprocessing
+      restartPolicy: Never
+  backoffLimit: 5

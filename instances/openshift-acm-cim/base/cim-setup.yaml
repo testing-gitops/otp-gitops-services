@@ -1,0 +1,33 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cim-setup
+  namespace: open-cluster-management 
+  annotations:
+    argocd.argoproj.io/sync-wave: "272"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+  labels:
+    gitops.tier.group: rhacm 
+    gitops.tier.layer: services
+spec:
+  template:
+    spec:
+      containers:
+        - image: quay.io/openshift/origin-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Patching Provisioning Resource to allo the Bare Metal Operator to watch ALL namespaces"
+              oc patch provisioning provisioning-configuration \
+                  --type merge -p '{"spec":{"watchAllNamespaces": true }}'
+              exit 0
+          imagePullPolicy: IfNotPresent
+          name: cim-setup
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccount: cli-cim-setup-job-sa
+      serviceAccountName: cli-cim-setup-job-sa
+      terminationGracePeriodSeconds: 30

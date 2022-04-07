@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ibm-infra-automation-postinstall
+  annotations:
+    argocd.argoproj.io/sync-wave: "295"
+  labels:
+    gitops.tier.group: ibm-cloudpak
+    gitops.tier.layer: services
+  namespace: {{.Values.infraAutomation.config.namespace}} # NAMESPACE
+spec:
+  template:
+    spec:
+      containers:
+      - name: infra-automation-postinstall
+        image: quay.io/congxdev/infra-automation-ldap:3.2
+        imagePullPolicy: Always
+      restartPolicy: Never
+  backoffLimit: 2

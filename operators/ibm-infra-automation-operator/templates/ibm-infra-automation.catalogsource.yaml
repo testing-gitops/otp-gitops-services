@@ -1,0 +1,13 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-management-orchestrator
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM Infrastructure Automation Installer Catalog
+  publisher: IBM Infrastructure Automation
+  sourceType: grpc
+  image: {{ .Values.infraAutomation.config.catalogSourceImage }} # ${CP4MCM_CATALOGSOURCE_IMAGE}
+  updateStrategy:
+    registryPoll:
+      interval: 45m

@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ansible-postinstall
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+  namespace: ansible-automation-platform
+spec:
+  template:
+    spec:
+      containers:
+      - name: ansible-console-link-postinstall
+        image: quay.io/congxdev/otp-console-link:4.8
+        imagePullPolicy: Always
+        env:
+        - name: APP_MENU_IMAGE_URL
+          value: data:image/png;base64,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
+        - name: APP_MENU_SECTION
+          value: One Touch Provisioning
+        - name: ROUTE_NAME
+          value: controller
+        - name: ROUTE_NAMESPACE
+          value: ansible-automation-platform
+        - name: CONSOLE_LINK_TEXT
+          value: Ansible Automation Platform
+        - name: APP_NAME
+          value: ansible-automation-platform
+      restartPolicy: OnFailure
+  backoffLimit: 2

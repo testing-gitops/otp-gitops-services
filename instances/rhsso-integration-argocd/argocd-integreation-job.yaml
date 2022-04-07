@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-keycloak-integration
+  namespace: sso-integration
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-keycloak-integration
+        image: quay.io/leoliu2011/argocd-keycloak-integration
+        envFrom:
+        - configMapRef:
+            name: argocd-configs
+      restartPolicy: Never
+  backoffLimit: 5

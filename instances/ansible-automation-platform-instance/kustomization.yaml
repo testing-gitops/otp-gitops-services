@@ -1,0 +1,14 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+bases:
+  - overlays/default
+
+patches:
+-  target:
+     kind: AutomationController
+     name: controller
+   patch: |-
+    - op: add
+      path: /spec/postgres_storage_class
+      value: 'ocs-storagecluster-cephfs'

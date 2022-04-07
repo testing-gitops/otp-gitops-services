@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cli-quay-setup-job-sa
+  namespace: quay-registry 
+  annotations:
+    argocd.argoproj.io/sync-wave: "200"
+    argocd.argoproj.io/hook: PreSync
