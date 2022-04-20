@@ -2,8 +2,8 @@ global: {}
 
 sealed-secrets:
   image:
-    repository: quay.io/bitnami/sealed-secrets-controller
-    tag: v0.16.0
+    repository: docker.io/bitnami/sealed-secrets-controller
+    tag: v0.17.5
     pullPolicy: IfNotPresent
     pullSecret: ""
 
