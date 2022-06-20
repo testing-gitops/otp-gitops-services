@@ -4,4 +4,5 @@ kind: Kustomization
 namespace: openshift-operators
 
 resources:
+  - operatorgroup.yaml
   - subscription.yaml

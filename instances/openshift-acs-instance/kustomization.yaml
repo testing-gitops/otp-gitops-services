@@ -8,7 +8,7 @@ patches:
 -  target:
      kind: Job
      name: create-cluster-init-bundle
-     namespace: stackrox
+     namespace: rhacs-operator
    patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/image
@@ -17,7 +17,7 @@ patches:
 -  target:
      kind: Central
      name: central
-     namespace: stackrox
+     namespace: rhacs-operator
    patch: |-
     - op: add
       path: /spec/central/persistence/persistentVolumeClaim/storageClassName

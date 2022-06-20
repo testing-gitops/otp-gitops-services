@@ -1,4 +1,4 @@
-apiVersion: discovery.open-cluster-management.io/v1alpha1
+apiVersion: discovery.open-cluster-management.io/v1
 kind: DiscoveryConfig
 metadata:
   name: discovery

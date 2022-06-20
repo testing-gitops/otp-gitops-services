@@ -10,12 +10,17 @@ spec:
   imagePullSecret: multiclusterhub-operator-pull-secret    # The pull secret generated above
   observabilityAddonSpec:               # The ObservabilityAddonSpec defines the global settings for all managed clusters which have observability add-on enabled
     enableMetrics: true                 # EnableMetrics indicates the observability addon push metrics to hub server
-    interval: 60                        # Interval for the observability addon push metrics to hub server
+    interval: 300                        # Interval for the observability addon push metrics to hub server
+  storageConfig:
+    alertmanagerStorageSize: 1Gi
+    compactStorageSize: 100Gi
+    metricObjectStorage:
+      key: thanos.yaml
+      name: thanos-object-storage
+    receiveStorageSize: 100Gi
+    ruleStorageSize: 1Gi
+    storageClass: ocs-storagecluster-ceph-rbd
+    storeStorageSize: 10Gi
   retentionResolution1h: 30d             # How long to retain samples of 1 hour in bucket
   retentionResolution5m: 14d
   retentionResolutionRaw: 5d
-  storageConfigObject:                  # Specifies the storage to be used by Observability
-    metricObjectStorage:
-      name: thanos-object-storage
-      key: thanos.yaml
-    statefulSetStorageClass: ocs-storagecluster-ceph-rbd
