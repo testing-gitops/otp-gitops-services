@@ -8,15 +8,7 @@ metadata:
 spec:
   databaseStorage:
     storageClassName: ocs-storagecluster-ceph-rbd
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 10Gi
   filesystemStorage:
     storageClassName: ocs-storagecluster-ceph-rbd
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 20Gi
+  imageStorage:
+    storageClassName: ocs-storagecluster-ceph-rbd 
