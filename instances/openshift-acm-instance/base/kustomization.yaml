@@ -9,5 +9,3 @@ resources:
   - sa.yaml
   - acm-setup.yaml
   - instance.yaml
-  - console-link-crb.yaml
-  - rhacm-console-link.yaml
