@@ -7,6 +7,10 @@ metadata:
 spec:
   nodeSelector:
       node-role.kubernetes.io/infra: ""
-  enableClusterBackup: false
-  enableClusterProxyAddon: false
+  overrides:
+    components:
+    - name: cluster-proxy-addon
+      enabled: false
+    - name: cluster-backup
+      enabled: true
   imagePullSecret: multiclusterhub-pull-secret
