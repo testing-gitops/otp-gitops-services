@@ -4,6 +4,8 @@ kind: MultiClusterHub
 metadata:
   name: multiclusterhub
   namespace: open-cluster-management
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   nodeSelector:
       node-role.kubernetes.io/infra: ""
@@ -12,5 +14,5 @@ spec:
     - name: cluster-proxy-addon
       enabled: false
     - name: cluster-backup
-      enabled: true
+      enabled: false
   imagePullSecret: multiclusterhub-pull-secret
